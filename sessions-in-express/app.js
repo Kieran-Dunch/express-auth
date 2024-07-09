@@ -5,11 +5,14 @@ const session = require("express-session")
 
 const PORT = process.env.PORT || 4001;
 
+const store = new session.MemoryStore();
+
 app.use(
   session({
     secret: "tEsting",
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
+    store
   })
 )
 

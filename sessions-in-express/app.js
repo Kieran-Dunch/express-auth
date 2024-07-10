@@ -10,6 +10,7 @@ const store = new session.MemoryStore();
 app.use(
   session({
     secret: "tEsting",
+    cookie: { maxAge: 172800000, secure: true, sameSite: 'none' },
     resave: false,
     saveUninitialized: false,
     store

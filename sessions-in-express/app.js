@@ -19,7 +19,7 @@ app.use(
 
 function ensureAuthentication(req, res, next) {
   // Complete the if statement below:
-  if () {
+  if (req.session.authenticated) {
     return next();
   } else {
     res.status(403).json({ msg: "You're not authorized to view this page" });
@@ -27,9 +27,9 @@ function ensureAuthentication(req, res, next) {
 }
 
 // Add your ensureAuthentication middleware below:
-app.get("/shop", (req, res) => {
+app.get("/shop", ensureAuthentication, (req, res) => {
   // Send the user object to the view page:
-  res.render("shop", { user: "Guest" });
+  res.render("shop", { user: req.session.user });
 });
 
 app.get("/login", (req, res) => {

@@ -21,6 +21,18 @@ app.use(passport.initialize());
 // Add the middleware to implement a session with passport below:
 app.use(passport.session());
 
+// Add your passport local strategy below:
+passport.use(
+  new LocalStrategy(function(username, password, done) {
+    db.users.findByUsername(username, (err, user) => {
+      if (err) return done(err);
+      if (!user) return done(null, false);
+      if (user.password != password) return done(null, false);
+      return done(null, user);
+    });
+  })
+);
+
 app.get("/", (req, res) => {
   res.send("Hello from the homepage!");
 });

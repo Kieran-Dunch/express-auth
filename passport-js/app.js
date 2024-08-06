@@ -2,9 +2,9 @@ const express = require("express");
 const app = express();
 const session = require("express-session");
 const store = new session.MemoryStore();
+const db = require("./db");
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
-const db = require("./db");
 const PORT = process.env.PORT || 4001;
 
 app.use(express.json());
@@ -14,9 +14,10 @@ app.use(express.static(__dirname + "/public"));
 
 app.use(
   session({
-    secret: "secret-key",
-    resave: false,
+    secret: "f4z4gs$Gcg",
+    cookie: { maxAge: 300000000, secure: false },
     saveUninitialized: false,
+    resave: false,
     store,
   })
 );
@@ -29,7 +30,6 @@ passport.serializeUser((user, done) => {
 });
 
 passport.deserializeUser((id, done) => {
-  // Look up user id in database.
   db.users.findById(id, function(err, user) {
     if (err) {
       return done(err);
@@ -60,19 +60,35 @@ app.get("/login", (req, res) => {
 });
 
 app.get("/profile", (req, res) => {
-  // Pass user object stored in session to the view page:
   res.render("profile", { user: req.user });
 });
 
-// Add the passport middleware below:
 app.post(
   "/login",
-  passport.authenticate("local",
-    { failureRedirect: "/login" }),
+  passport.authenticate("local", { failureRedirect: "/login" }),
   (req, res) => {
     res.redirect("profile");
   }
 );
+
+app.get("/register", (req, res) => {
+  res.render("register");
+});
+
+// POST REGISTER:
+app.post("/register", async (req, res) => {
+  const { username, password } = req.body;
+  // Create new user:
+  const newUser = await db.users.createUser({ username, password });
+  // Add if/else statement with the new user as the condition:
+  if (newUser) {
+    // Send correct response if new user is created:
+    res.status(201).json({ msg: "User created successfully", newUser });
+  } else {
+    // Send correct response if new user failed to be created:
+    res.status(500).json({ msg: "Failed to create user" });
+  }
+});
 
 app.listen(PORT, () => {
   console.log(`Server is listening on port ${PORT}`);

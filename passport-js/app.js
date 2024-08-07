@@ -55,12 +55,14 @@ passport.use(
   })
 );
 
-app.get("/login", (req, res) => {
-  res.render("login");
+// Complete the logout handler below:
+app.get("/logout", (req, res) => {
+  req.logout();
+  res.redirect("/login");
 });
 
-app.get("/profile", (req, res) => {
-  res.render("profile", { user: req.user });
+app.get("/login", (req, res) => {
+  res.render("login");
 });
 
 app.post(
@@ -71,22 +73,20 @@ app.post(
   }
 );
 
-app.get("/register", (req, res) => {
-  res.render("register");
+app.get("/profile", (req, res) => {
+  res.render("profile", { user: req.user });
 });
 
-// POST REGISTER:
 app.post("/register", async (req, res) => {
   const { username, password } = req.body;
-  // Create new user:
   const newUser = await db.users.createUser({ username, password });
-  // Add if/else statement with the new user as the condition:
   if (newUser) {
-    // Send correct response if new user is created:
-    res.status(201).json({ msg: "User created successfully", newUser });
+    res.status(201).json({
+      msg: "New user created!",
+      newUser,
+    });
   } else {
-    // Send correct response if new user failed to be created:
-    res.status(500).json({ msg: "Failed to create user" });
+    res.status(500).json({ msg: "Unable to create user" });
   }
 });
 

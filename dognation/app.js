@@ -3,6 +3,8 @@ const express = require("express");
 const app = express();
 const session = require("express-session");
 const passport = require("passport");
+const LocalStrategy = require("passport-local").Strategy;
+
 
 // App config
 app.set("trust proxy", 1);
@@ -26,6 +28,40 @@ app.use(
   })
 )
 // Passport Config
+passport.use(
+  new LocalStrategy((username, password, done) => {
+    helper.findByUsername(username, (err, user) => {
+      if (err) {
+        return done(err);
+      }
+      if (!user) {
+        return done(null, false);
+      }
+      if (user.password != password) {
+        return done(null, false);
+      }
+      return done(null, user);
+    });
+  })
+);
+
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
+
+passport.deserializeUser((id, done) => {
+  helper.findById(id, (err, user) => {
+    if (err) {
+      return done(err);
+    }
+    done(null, user);
+  });
+});
+
+// Middleware
+app.use(passport.initialize());
+
+app.use(passport.session());
 
 // Routes
 app.use(require("./routes/index.routes"));

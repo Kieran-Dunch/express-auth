@@ -4,7 +4,6 @@ const session = require("express-session");
 const store = new session.MemoryStore();
 const db = require("./db");
 const passport = require("passport");
-const LocalStrategy = require("passport-local").Strategy;
 const PORT = process.env.PORT || 4001;
 
 app.use(express.json());
@@ -24,36 +23,6 @@ app.use(
 
 app.use(passport.initialize());
 app.use(passport.session());
-
-passport.serializeUser((user, done) => {
-  done(null, user.id);
-});
-
-passport.deserializeUser((id, done) => {
-  db.users.findById(id, function(err, user) {
-    if (err) {
-      return done(err);
-    }
-    done(null, user);
-  });
-});
-
-passport.use(
-  new LocalStrategy(function(username, password, cb) {
-    db.users.findByUsername(username, function(err, user) {
-      if (err) {
-        return cb(err);
-      }
-      if (!user) {
-        return cb(null, false);
-      }
-      if (user.password != password) {
-        return cb(null, false);
-      }
-      return cb(null, user);
-    });
-  })
-);
 
 // Complete the logout handler below:
 app.get("/logout", (req, res) => {

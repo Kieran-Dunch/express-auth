@@ -12,13 +12,17 @@ router.post("/register", async (req, res) => {
   const id = { id: helper.getNewId(users) };
   try {
     const user = await helper.userExists(username);
+
     if (user) {
       console.log("User already exists!");
       return res.redirect("login");
     }
     // Hash password before storing in local DB:
+    const salt = await bcrypt.genSalt(10);
 
-    const newUser = { ...id, username, password: password };
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    const newUser = { ...id, username, password: hashedPassword };
 
     // Store new user in local DB
     await users.push(newUser);

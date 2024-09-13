@@ -27,36 +27,6 @@ app.use(
     secure: true
   })
 )
-// Passport Config
-passport.use(
-  new LocalStrategy((username, password, done) => {
-    helper.findByUsername(username, (err, user) => {
-      if (err) {
-        return done(err);
-      }
-      if (!user) {
-        return done(null, false);
-      }
-      if (user.password != password) {
-        return done(null, false);
-      }
-      return done(null, user);
-    });
-  })
-);
-
-passport.serializeUser((user, done) => {
-  done(null, user.id);
-});
-
-passport.deserializeUser((id, done) => {
-  helper.findById(id, (err, user) => {
-    if (err) {
-      return done(err);
-    }
-    done(null, user);
-  });
-});
 
 // Middleware
 app.use(passport.initialize());
@@ -67,7 +37,7 @@ app.use(passport.session());
 app.use(require("./routes/index.routes"));
 
 app.get("/", (req, res) => {
-  const user = null || "Guest";
+  const user = req.user || "Guest";
   res.render("home", { user });
 });
 

@@ -5,18 +5,21 @@ const helper = require("../helpers/helper");
 
 // Set up the Passport strategy:
 passport.use(
-  new LocalStrategy(function(username, password, cb) {
-    helper.findByUsername(username, async function(err, user) {
+  new LocalStrategy((username, password, done) => {
+    helper.findByUsername(username, async (err, user) => {
+
+      const matchedPassword = await bcrypt.compare(password, user.password)
+
       if (err) {
-        return cb(err);
+        return done(err);
       }
       if (!user) {
-        return cb(null, false);
+        return done(null, false);
       }
-      if (user.password != password) {
-        return cb(null, false);
+      if (user.password != matchedPassword) {
+        return done(null, false);
       }
-      return cb(null, user);
+      return done(null, user);
     });
   })
 );
@@ -26,7 +29,7 @@ passport.serializeUser((user, done) => {
 });
 
 passport.deserializeUser((id, done) => {
-  db.users.findById(id, function(err, user) {
+  helper.findById(id, function(err, user) {
     if (err) {
       return done(err);
     }

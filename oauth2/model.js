@@ -7,7 +7,19 @@ const getClient = (clientId, clientSecret) => {
   return confidentialClients[0];
 };
 
+const saveToken = (token, client, user) => {
+  token.client = {
+    id: client.clientId
+  };
+  token.user = {
+    username: user.username
+  };
+  db.tokens.push(token);
+  return token;
+};
+
 
 module.exports = {
-  getClient: getClient
+  getClient: getClient,
+  saveToken: saveToken
 };

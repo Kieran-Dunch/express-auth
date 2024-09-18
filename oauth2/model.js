@@ -18,8 +18,13 @@ const saveToken = (token, client, user) => {
   return token;
 };
 
+const getUserFromClient = (client) => {
+  return {};
+};
+
 
 module.exports = {
   getClient: getClient,
-  saveToken: saveToken
+  saveToken: saveToken,
+  getUserFromClient: getUserFromClient
 };

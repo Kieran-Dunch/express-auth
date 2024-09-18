@@ -10,6 +10,8 @@ const oauth = new OAuth2Server({
   allowBearerTokensInQueryString: true,
 });
 
+
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

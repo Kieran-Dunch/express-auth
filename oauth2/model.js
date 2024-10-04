@@ -18,6 +18,8 @@ const saveToken = (token, client, user) => {
   return token;
 };
 
+
+// working with omniauth2.0
 const getUserFromClient = (client) => {
   return {};
 };

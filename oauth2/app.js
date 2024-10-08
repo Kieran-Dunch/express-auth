@@ -15,6 +15,19 @@ const oauth = new OAuth2Server({
   allowBearerTokensInQueryString: true
 })
 
+// write authenticateRequest() here
+const authenticateRequest = (req, res, next) => {
+  let request = new OAuth2Server.Request(req);
+  let response = new OAuth2Server.Response(res);
+  return oauth.authenticate(request, response)
+    .then(() => {
+      next();
+    })
+    .catch((err) => {
+      res.json(err);
+    })
+};
+
 // Write obtainToken() here
 const obtainToken = (req, res) => {
   let request = new OAuth2Server.Request(req);
@@ -39,7 +52,7 @@ app.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, 'public/login.html'));
 })
 
-app.get('/secret', (req, res) => {
+app.get('/secret', authenticateRequest, (req, res) => {
   res.send('Welcome to the secret area.');
 })
 
